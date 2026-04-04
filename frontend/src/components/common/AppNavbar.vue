@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Sun, Moon, ChevronDown } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/auth-store'
 import { useThemeToggle } from '@/composables/use-theme-toggle'
 import { useRouter } from 'vue-router'
@@ -24,17 +25,17 @@ async function handleLogout() {
     <v-btn :to="{ name: 'sandbox' }" variant="text">Sandbox</v-btn>
     <v-btn :to="{ name: 'templates' }" variant="text">Templates</v-btn>
 
-    <v-btn
-      :icon="isDark ? 'mdi-weather-sunny' : 'mdi-weather-night'"
-      variant="text"
-      @click="toggle"
-    />
+    <v-btn variant="text" @click="toggle">
+      <Sun v-if="isDark" :size="20" />
+      <Moon v-else :size="20" />
+    </v-btn>
 
     <template v-if="auth.isAuthenticated">
       <v-menu>
         <template #activator="{ props }">
-          <v-btn v-bind="props" variant="text" append-icon="mdi-chevron-down">
+          <v-btn v-bind="props" variant="text">
             {{ auth.user?.name ?? auth.user?.email }}
+            <ChevronDown :size="16" class="ml-1" />
           </v-btn>
         </template>
         <v-list>
