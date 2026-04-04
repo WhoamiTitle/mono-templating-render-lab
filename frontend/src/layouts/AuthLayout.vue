@@ -1,5 +1,10 @@
+<script setup lang="ts">
+import AppNavbar from '@/components/common/AppNavbar.vue'
+</script>
+
 <template>
   <v-app>
+    <AppNavbar />
     <v-main>
       <v-container class="fill-height" fluid>
         <v-row align="center" justify="center">

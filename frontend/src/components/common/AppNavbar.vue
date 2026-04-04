@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/auth-store'
+import { useThemeToggle } from '@/composables/use-theme-toggle'
 import { useRouter } from 'vue-router'
 
 const auth = useAuthStore()
 const router = useRouter()
+const { isDark, toggle } = useThemeToggle()
 
 async function handleLogout() {
   auth.logout()
@@ -14,13 +16,19 @@ async function handleLogout() {
 <template>
   <v-app-bar elevation="1">
     <v-app-bar-title>
-      <router-link to="/sandbox" class="text-decoration-none text-white font-weight-bold">
+      <router-link to="/sandbox" class="text-decoration-none font-weight-bold">
         RenderLab
       </router-link>
     </v-app-bar-title>
 
     <v-btn :to="{ name: 'sandbox' }" variant="text">Sandbox</v-btn>
     <v-btn :to="{ name: 'templates' }" variant="text">Templates</v-btn>
+
+    <v-btn
+      :icon="isDark ? 'mdi-weather-sunny' : 'mdi-weather-night'"
+      variant="text"
+      @click="toggle"
+    />
 
     <template v-if="auth.isAuthenticated">
       <v-menu>
