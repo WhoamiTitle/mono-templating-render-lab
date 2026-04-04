@@ -1,0 +1,15 @@
+{
+  "name": "mono-templating-render-lab/backend",
+  "description": "Backend domain for templating render lab",
+  "type": "project",
+  "require": {
+    "php": "^8.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "application\\": "application/",
+      "domain\\": "domain/",
+      "infrastructure\\": "infrastructure/"
+    }
+  }
+}
