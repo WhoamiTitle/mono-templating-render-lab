@@ -1,0 +1,15 @@
+#!/bin/sh
+# Run lint + build only if frontend files are staged.
+# Skips hook entirely when only non-frontend files are changed.
+
+FRONTEND_STAGED=$(git diff --cached --name-only | grep -c '^frontend/')
+
+if [ "$FRONTEND_STAGED" -eq 0 ]; then
+  echo "No frontend files staged — skipping frontend pre-commit checks."
+  exit 0
+fi
+
+echo "Frontend files staged — running lint + build..."
+
+cd frontend || exit 1
+npm run lint && npm run build
