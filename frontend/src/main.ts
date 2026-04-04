@@ -3,16 +3,12 @@ import { createPinia } from 'pinia'
 
 import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
-import * as components from 'vuetify/components'
-import * as directives from 'vuetify/directives'
 
 import App from './App.vue'
 import router from './router'
 
-const vuetify = createVuetify({
-  components,
-  directives,
-})
+// Components are auto-imported per-file by vite-plugin-vuetify — no wildcard import needed
+const vuetify = createVuetify()
 
 const app = createApp(App)
 
