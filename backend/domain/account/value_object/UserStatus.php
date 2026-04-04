@@ -9,7 +9,6 @@ use domain\common\exception\ValidationException;
 final class UserStatus
 {
     public const ACTIVE = 'active';
-    public const BLOCKED = 'blocked';
 
     private string $value;
 
@@ -38,7 +37,6 @@ final class UserStatus
     {
         return [
             self::ACTIVE,
-            self::BLOCKED,
         ];
     }
 

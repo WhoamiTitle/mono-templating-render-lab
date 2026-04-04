@@ -25,7 +25,6 @@ Domain module for personal cabinet authorization using `email + password`.
 
 - User email is normalized and validated.
 - Password hash is required for every user.
-- Blocked user cannot authenticate.
 - Session is active only when not revoked and not expired.
 - Password reset token is one-time and expires by time.
 - Template and render access is restricted by owner id in template/render domain modules.

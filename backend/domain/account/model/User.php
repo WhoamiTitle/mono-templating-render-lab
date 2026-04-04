@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace domain\account\model;
 
 use DateTimeImmutable;
-use domain\account\exception\UserBlockedException;
 use domain\account\value_object\Email;
 use domain\account\value_object\UserStatus;
 use domain\common\exception\ValidationException;
@@ -73,10 +72,6 @@ class User
 
     public function markLoggedIn(DateTimeImmutable $loggedInAt): void
     {
-        if ($this->status === UserStatus::BLOCKED) {
-            throw new UserBlockedException($this->userId);
-        }
-
         if ($loggedInAt < $this->updatedAt) {
             throw new ValidationException('account.updated_at.invalid: ' . $this->userId, 4415);
         }
@@ -87,8 +82,6 @@ class User
 
     public function assertCanAuthenticate(): void
     {
-        if ($this->status === UserStatus::BLOCKED) {
-            throw new UserBlockedException($this->userId);
-        }
+        // Reserved for future account-state checks.
     }
 }
