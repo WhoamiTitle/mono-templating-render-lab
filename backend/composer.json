@@ -3,13 +3,33 @@
   "description": "Backend domain for templating render lab",
   "type": "project",
   "require": {
-    "php": "^8.2"
+    "php": "^8.2",
+    "ext-pdo": "*",
+    "ext-pdo_pgsql": "*"
   },
   "autoload": {
     "psr-4": {
       "application\\": "application/",
       "domain\\": "domain/",
       "infrastructure\\": "infrastructure/"
-    }
+    },
+    "files": [
+      "application/usecase/command/template/TemplateCommands.php",
+      "application/usecase/command/template/TemplateCommandUseCases.php",
+      "application/usecase/command/render_run/RenderRunCommands.php",
+      "application/usecase/command/render_run/RenderRunCommandUseCases.php",
+      "application/usecase/command/benchmark_run/BenchmarkRunCommands.php",
+      "application/usecase/command/benchmark_run/BenchmarkRunCommandUseCases.php",
+      "application/usecase/command/account/AccountCommands.php",
+      "application/usecase/command/account/AccountCommandUseCases.php",
+      "application/usecase/query/template/TemplateQueryUseCases.php",
+      "application/usecase/query/render_run/RenderRunQueryUseCases.php",
+      "application/usecase/query/benchmark_run/BenchmarkRunQueryUseCases.php",
+      "infrastructure/presentation/http/controller/RegisterTemplateController.php",
+      "infrastructure/presentation/http/controller/StartRenderRunController.php",
+      "infrastructure/presentation/http/controller/BenchmarkRunCommandControllers.php",
+      "infrastructure/presentation/http/controller/AccountCommandControllers.php",
+      "infrastructure/presentation/http/controller/QueryControllers.php"
+    ]
   }
 }
