@@ -1,6 +1,12 @@
 import { ref, reactive } from 'vue'
 import { defineStore } from 'pinia'
-import type { Slot, BenchmarkResult } from '@/types'
+import type { Slot, BenchmarkResult, SandboxState } from '@/types'
+
+const DEFAULT_PRESET: SandboxState = {
+  slotA: { engineId: 'handlebars', code: '<h1>Hello, {{name}}!</h1>' },
+  slotB: { engineId: 'pug', code: 'h1 Hello, #{name}!' },
+  json: '{\n  "name": "World"\n}',
+}
 
 export const useSandboxStore = defineStore('sandbox', () => {
   const slotA = reactive<Slot>({ engineId: 'handlebars', code: '' })
@@ -24,6 +30,20 @@ export const useSandboxStore = defineStore('sandbox', () => {
     savedStateId.value = id
   }
 
+  function loadState(state: SandboxState) {
+    slotA.engineId = state.slotA.engineId
+    slotA.code = state.slotA.code
+    slotB.engineId = state.slotB.engineId
+    slotB.code = state.slotB.code
+    json.value = state.json
+    isDirty.value = false
+    savedStateId.value = null
+  }
+
+  function resetToPreset() {
+    loadState(DEFAULT_PRESET)
+  }
+
   return {
     slotA,
     slotB,
@@ -37,5 +57,7 @@ export const useSandboxStore = defineStore('sandbox', () => {
     savedStateId,
     markDirty,
     markSaved,
+    loadState,
+    resetToPreset,
   }
 })
