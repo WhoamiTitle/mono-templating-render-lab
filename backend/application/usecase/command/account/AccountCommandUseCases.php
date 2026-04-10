@@ -52,7 +52,6 @@ final readonly class LoginUserResult implements CommandResultInterface
     public function toArray(): array
     {
         return [
-            'sessionId' => $this->sessionId,
             'userId' => $this->userId,
             'expiresAt' => $this->expiresAt,
         ];

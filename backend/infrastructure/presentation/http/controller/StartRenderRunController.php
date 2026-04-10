@@ -14,7 +14,7 @@ use infrastructure\presentation\http\HttpRequest;
 use infrastructure\presentation\http\HttpResponse;
 use infrastructure\presentation\http\JsonResponse;
 
-final class RenderRunCommandControllers extends AbstractJsonController
+final class StartRenderRunController extends AbstractJsonController
 {
     public function __construct(
         private readonly StartRenderRunUseCaseInterface $useCase

@@ -14,7 +14,7 @@ use infrastructure\presentation\http\HttpRequest;
 use infrastructure\presentation\http\HttpResponse;
 use infrastructure\presentation\http\JsonResponse;
 
-final class TemplateCommandControllers extends AbstractJsonController
+final class RegisterTemplateController extends AbstractJsonController
 {
     public function __construct(
         private readonly RegisterTemplateUseCaseInterface $useCase
