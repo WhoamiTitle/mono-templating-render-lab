@@ -28,7 +28,8 @@ final class RegisterTemplateUseCase implements RegisterTemplateUseCaseInterface
             name: $command->name,
             engineType: $command->engineType,
             templateBody: $command->templateBody,
-            createdAt: $createdAt
+            createdAt: $createdAt,
+            isPublic: $command->isPublic
         );
 
         $this->templateRepository->save($template);
@@ -38,6 +39,7 @@ final class RegisterTemplateUseCase implements RegisterTemplateUseCaseInterface
             ownerId: $template->ownerId,
             name: $template->name,
             engineType: $template->engineType,
+            isPublic: $template->isPublic,
             isActive: $template->isActive,
             createdAt: IsoDateTime::format($template->createdAt),
             updatedAt: IsoDateTime::format($template->updatedAt)

@@ -61,7 +61,19 @@ abstract class PostgresRepository
         $statement = $this->connection->prepare($sql);
 
         foreach ($params as $name => $value) {
-            $statement->bindValue(':' . $name, $this->normalizeParameterValue($value));
+            $placeholder = ':' . $name;
+
+            if ($value === null) {
+                $statement->bindValue($placeholder, null, PDO::PARAM_NULL);
+                continue;
+            }
+
+            if (is_bool($value)) {
+                $statement->bindValue($placeholder, $value, PDO::PARAM_BOOL);
+                continue;
+            }
+
+            $statement->bindValue($placeholder, $this->normalizeParameterValue($value));
         }
 
         $statement->execute();
@@ -79,10 +91,6 @@ abstract class PostgresRepository
      */
     private function normalizeParameterValue(mixed $value): mixed
     {
-        if (is_bool($value)) {
-            return $value;
-        }
-
         if (is_array($value)) {
             return JsonValue::encode($value);
         }

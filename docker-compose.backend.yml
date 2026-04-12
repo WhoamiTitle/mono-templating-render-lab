@@ -1,0 +1,46 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: templating_lab
+      POSTGRES_USER: templating_user
+      POSTGRES_PASSWORD: templating_pass
+    ports:
+      - "54329:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    volumes:
+      - templating_lab_pgdata:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    working_dir: /app/backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      POSTGRES_DB: templating_lab
+      POSTGRES_USER: templating_user
+      POSTGRES_PASSWORD: templating_pass
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_SSLMODE: disable
+      SESSION_TTL_SPEC: P7D
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend:/app/backend
+    command: >
+      sh -lc "
+      composer install --no-interaction --no-progress &&
+      php bin/migrate.php &&
+      php -S 0.0.0.0:8080 -t public public/index.php
+      "
+
+volumes:
+  templating_lab_pgdata:

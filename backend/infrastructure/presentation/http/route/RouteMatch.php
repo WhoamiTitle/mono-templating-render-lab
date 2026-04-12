@@ -11,7 +11,8 @@ final readonly class RouteMatch
      */
     public function __construct(
         public object $controller,
-        public array $routeParams
+        public array $routeParams,
+        public bool $requiresAuth = true
     ) {
     }
 }

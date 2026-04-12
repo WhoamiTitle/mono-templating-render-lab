@@ -22,6 +22,7 @@ final class TemplateRowMapper
             templateBody: (string)$row['template_body'],
             createdAt: new DateTimeImmutable((string)$row['created_at']),
             updatedAt: new DateTimeImmutable((string)$row['updated_at']),
+            isPublic: (bool)($row['is_public'] ?? false),
             isActive: (bool)$row['is_active']
         );
     }

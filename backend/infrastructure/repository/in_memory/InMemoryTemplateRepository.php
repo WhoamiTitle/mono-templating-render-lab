@@ -42,4 +42,12 @@ final class InMemoryTemplateRepository implements TemplateRepositoryInterface
 
         return InMemoryRepositoryTools::filterByProperties($this->templates, $filters);
     }
+
+    public function listPublic(array $filters = []): array
+    {
+        $filters['isPublic'] = true;
+        $filters['isActive'] = true;
+
+        return InMemoryRepositoryTools::filterByProperties($this->templates, $filters);
+    }
 }

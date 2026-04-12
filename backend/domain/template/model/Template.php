@@ -21,6 +21,7 @@ class Template
         public string $templateBody,
         public DateTimeImmutable $createdAt,
         public DateTimeImmutable $updatedAt,
+        public bool $isPublic = false,
         public bool $isActive = true
     ) {
         $this->templateId = trim($this->templateId);
@@ -56,7 +57,8 @@ class Template
         string $name,
         string $engineType,
         string $templateBody,
-        DateTimeImmutable $createdAt
+        DateTimeImmutable $createdAt,
+        bool $isPublic = false
     ): self {
         return new self(
             templateId: $templateId,
@@ -66,7 +68,29 @@ class Template
             templateBody: $templateBody,
             createdAt: $createdAt,
             updatedAt: $createdAt,
+            isPublic: $isPublic,
             isActive: true
+        );
+    }
+
+    public function cloneForOwner(
+        string $newTemplateId,
+        string $newOwnerId,
+        DateTimeImmutable $createdAt,
+        ?string $newName = null
+    ): self {
+        $copyName = $newName !== null && trim($newName) !== ''
+            ? trim($newName)
+            : $this->name . ' (copy)';
+
+        return self::register(
+            templateId: $newTemplateId,
+            ownerId: $newOwnerId,
+            name: $copyName,
+            engineType: $this->engineType,
+            templateBody: $this->templateBody,
+            createdAt: $createdAt,
+            isPublic: false
         );
     }
 
@@ -159,4 +183,3 @@ class Template
         }
     }
 }
-

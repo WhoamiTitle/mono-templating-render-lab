@@ -17,6 +17,14 @@ interface ListTemplatesUseCaseInterface
     public function execute(ListTemplatesQuery $query): array;
 }
 
+interface ListPublicTemplatesUseCaseInterface
+{
+    /**
+     * @return TemplateView[]
+     */
+    public function execute(ListPublicTemplatesQuery $query): array;
+}
+
 interface GetTemplateStatsUseCaseInterface
 {
     public function execute(GetTemplateStatsQuery $query): TemplateStatsView;
@@ -52,6 +60,17 @@ final readonly class GetTemplateStatsQuery
     }
 }
 
+final readonly class ListPublicTemplatesQuery
+{
+    /**
+     * @param array<string, mixed> $filters
+     */
+    public function __construct(
+        public array $filters = []
+    ) {
+    }
+}
+
 final readonly class TemplateView
 {
     public function __construct(
@@ -60,6 +79,7 @@ final readonly class TemplateView
         public string $name,
         public string $engineType,
         public string $templateBody,
+        public bool $isPublic,
         public bool $isActive,
         public string $createdAt,
         public string $updatedAt
@@ -77,6 +97,7 @@ final readonly class TemplateView
             'name' => $this->name,
             'engineType' => $this->engineType,
             'templateBody' => $this->templateBody,
+            'isPublic' => $this->isPublic,
             'isActive' => $this->isActive,
             'createdAt' => $this->createdAt,
             'updatedAt' => $this->updatedAt,

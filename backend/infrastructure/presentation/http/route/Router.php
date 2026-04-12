@@ -10,7 +10,7 @@ use infrastructure\presentation\http\exception\NotFoundHttpException;
 final class Router
 {
     /**
-     * @param array<int, array{method: string, path: string, controller: object}> $routes
+     * @param array<int, array{method: string, path: string, controller: object, requiresAuth?: bool}> $routes
      */
     public function __construct(
         private readonly array $routes
@@ -34,7 +34,8 @@ final class Router
 
             return new RouteMatch(
                 controller: $route['controller'],
-                routeParams: $routeParams
+                routeParams: $routeParams,
+                requiresAuth: (bool)($route['requiresAuth'] ?? true)
             );
         }
 

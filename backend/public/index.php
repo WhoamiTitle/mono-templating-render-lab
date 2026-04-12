@@ -8,6 +8,7 @@ use infrastructure\presentation\http\HttpKernel;
 use infrastructure\presentation\http\RequestFactory;
 use infrastructure\presentation\http\ResponseEmitter;
 use infrastructure\presentation\http\route\Router;
+use infrastructure\support\SystemClock;
 
 $autoloadPath = __DIR__ . '/../vendor/autoload.php';
 if (!is_file($autoloadPath)) {
@@ -46,7 +47,11 @@ foreach (['POSTGRES_HOST', 'POSTGRES_PORT', 'POSTGRES_SSLMODE', 'SESSION_TTL_SPE
 }
 
 $container = new PostgresServiceContainer(PostgresConfig::fromEnv($env));
-$kernel = new HttpKernel(new Router($container->commandRoutes()));
+$kernel = new HttpKernel(
+    new Router($container->commandRoutes()),
+    $container->authSessionRepository(),
+    new SystemClock()
+);
 $request = (new RequestFactory())->fromGlobals($_SERVER, $_COOKIE);
 
 (new ResponseEmitter())->emit($kernel->handle($request));

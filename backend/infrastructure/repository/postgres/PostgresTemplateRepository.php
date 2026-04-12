@@ -16,6 +16,7 @@ final class PostgresTemplateRepository extends PostgresRepository implements Tem
         'ownerId' => 'owner_id',
         'engineType' => 'engine_type',
         'isActive' => 'is_active',
+        'isPublic' => 'is_public',
         'name' => 'name',
     ];
 
@@ -36,6 +37,7 @@ final class PostgresTemplateRepository extends PostgresRepository implements Tem
                 template_body,
                 created_at,
                 updated_at,
+                is_public,
                 is_active
             ) VALUES (
                 :template_id,
@@ -45,6 +47,7 @@ final class PostgresTemplateRepository extends PostgresRepository implements Tem
                 :template_body,
                 :created_at,
                 :updated_at,
+                :is_public,
                 :is_active
             )
             ON CONFLICT (template_id) DO UPDATE SET
@@ -54,6 +57,7 @@ final class PostgresTemplateRepository extends PostgresRepository implements Tem
                 template_body = EXCLUDED.template_body,
                 created_at = EXCLUDED.created_at,
                 updated_at = EXCLUDED.updated_at,
+                is_public = EXCLUDED.is_public,
                 is_active = EXCLUDED.is_active
             SQL,
             [
@@ -64,6 +68,7 @@ final class PostgresTemplateRepository extends PostgresRepository implements Tem
                 'template_body' => $template->templateBody,
                 'created_at' => $template->createdAt,
                 'updated_at' => $template->updatedAt,
+                'is_public' => $template->isPublic,
                 'is_active' => $template->isActive,
             ]
         );
@@ -105,6 +110,21 @@ final class PostgresTemplateRepository extends PostgresRepository implements Tem
                 'owner_id' => $ownerId,
                 ...$builtFilter['params'],
             ]
+        );
+
+        return array_map(static fn (array $row): Template => TemplateRowMapper::toModel($row), $rows);
+    }
+
+    public function listPublic(array $filters = []): array
+    {
+        unset($filters['ownerId'], $filters['isPublic'], $filters['isActive']);
+        $builtFilter = PostgresFilterBuilder::build($filters, self::FILTER_COLUMNS);
+
+        $rows = $this->fetchAll(
+            'SELECT * FROM templates WHERE is_public = true AND is_active = true'
+            . $builtFilter['sql']
+            . ' ORDER BY updated_at DESC, template_id ASC',
+            $builtFilter['params']
         );
 
         return array_map(static fn (array $row): Template => TemplateRowMapper::toModel($row), $rows);

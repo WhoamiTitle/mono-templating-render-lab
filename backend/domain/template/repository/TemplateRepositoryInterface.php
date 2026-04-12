@@ -18,4 +18,9 @@ interface TemplateRepositoryInterface
      * @return Template[]
      */
     public function listByOwner(string $ownerId, array $filters = []): array;
+
+    /**
+     * @return Template[]
+     */
+    public function listPublic(array $filters = []): array;
 }
