@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
+import MonacoEditorWrapper from '@/components/sandbox/MonacoEditorWrapper.vue'
 import { useStatePersistence } from '@/composables/use-state-persistence'
+import { useSandboxStore } from '@/stores/sandbox-store'
 
 const { runRestoreChain } = useStatePersistence()
+const sandbox = useSandboxStore()
 
 onMounted(() => {
   runRestoreChain()
@@ -30,13 +33,6 @@ onMounted(() => {
     <div class="sandbox-cell cell-compare" />
   </div>
 </template>
-
-<script setup lang="ts">
-import MonacoEditorWrapper from '@/components/sandbox/MonacoEditorWrapper.vue'
-import { useSandboxStore } from '@/stores/sandbox-store'
-
-const sandbox = useSandboxStore()
-</script>
 
 <style scoped>
 .sandbox-page {

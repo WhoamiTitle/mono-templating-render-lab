@@ -48,6 +48,6 @@ export default defineConfig({
     format: 'es',
   },
   optimizeDeps: {
-    include: ['monaco-editor/esm/vs/editor/editor.worker'],
+    include: ['monaco-editor/esm/vs/editor/editor.worker', 'ejs'],
   },
 })
