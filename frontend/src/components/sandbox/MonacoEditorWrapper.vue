@@ -53,6 +53,12 @@ onMounted(async () => {
     readOnly: props.readonly,
     automaticLayout: false,
     scrollBeyondLastLine: false,
+    // Disable features that require language-specific workers (not available for template languages).
+    links: false,
+    folding: false,
+    stickyScroll: { enabled: false },
+    occurrencesHighlight: 'off',
+    hover: { enabled: false },
   })
 
   editor.onDidChangeModelContent(() => {

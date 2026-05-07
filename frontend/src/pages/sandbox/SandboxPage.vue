@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
-import MonacoEditorWrapper from '@/components/sandbox/MonacoEditorWrapper.vue'
+import EditorTabs from '@/components/sandbox/EditorTabs.vue'
+import PreviewPanel from '@/components/sandbox/PreviewPanel.vue'
 import { useStatePersistence } from '@/composables/use-state-persistence'
-import { useSandboxStore } from '@/stores/sandbox-store'
+import { useDebouncedRender } from '@/composables/use-debounced-render'
 
 const { runRestoreChain } = useStatePersistence()
-const sandbox = useSandboxStore()
+const { previewHtml, previewError } = useDebouncedRender()
 
 onMounted(() => {
   runRestoreChain()
@@ -14,17 +15,13 @@ onMounted(() => {
 
 <template>
   <div class="sandbox-page">
-    <!-- Top-left: Monaco Editor -->
     <div class="sandbox-cell cell-editor">
-      <MonacoEditorWrapper
-        v-model="sandbox.slotA.code"
-        language="handlebars"
-        class="fill-cell"
-      />
+      <EditorTabs />
     </div>
 
-    <!-- Top-right: Preview (not yet implemented) -->
-    <div class="sandbox-cell cell-preview" />
+    <div class="sandbox-cell cell-preview">
+      <PreviewPanel :html="previewHtml" :error="previewError" />
+    </div>
 
     <!-- Bottom-left: Compilation status (not yet implemented) -->
     <div class="sandbox-cell cell-status" />
@@ -59,9 +56,4 @@ onMounted(() => {
   border-top: none;
 }
 
-.fill-cell {
-  width: 100%;
-  height: 100%;
-  min-height: unset;
-}
 </style>

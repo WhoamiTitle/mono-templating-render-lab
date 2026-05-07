@@ -1,3 +1,7 @@
+// Pug (and some other Node-targeting libs) reference `process` at runtime.
+// This shim must be the first import so it runs before any lazy-loaded engine.
+import './shims/node-process-shim'
+
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 
