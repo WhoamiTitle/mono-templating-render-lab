@@ -78,21 +78,22 @@
         </v-btn>
 
         <v-btn
+          v-if="auth.isAuthenticated"
           size="small"
-          variant="text"
+          :variant="sandbox.isDirty ? 'tonal' : 'text'"
           :loading="isSavingState"
-          @click="share"
+          @click="saveAndShare"
         >
-          Share
+          {{ sandbox.isDirty ? 'Save' : 'Saved ✓' }}
         </v-btn>
 
         <v-btn
           size="small"
-          variant="tonal"
-          :loading="isSavingState"
-          @click="save"
+          variant="text"
+          :disabled="isSavingState"
+          @click="newSandbox"
         >
-          Save
+          New
         </v-btn>
       </div>
     </div>
@@ -113,16 +114,22 @@ import { useAuthStore } from '@/stores/auth-store'
 import { useBenchmark } from '@/composables/use-benchmark'
 import { useSandboxShare } from '@/composables/use-sandbox-share'
 import { useSaveRun } from '@/composables/use-save-run'
+import { useStatePersistence } from '@/composables/use-state-persistence'
 
 const ITER_PRESETS = [100, 500, 1000, 5000] as const
 
 const sandbox = useSandboxStore()
 const auth = useAuthStore()
 const { isRunning, benchmarkError, progress, runBenchmark, cancel } = useBenchmark()
-const { isSaving: isSavingState, feedbackMsg: shareMsg, save, share } = useSandboxShare()
+const { isSaving: isSavingState, feedbackMsg: shareMsg, saveAndShare } = useSandboxShare()
 const { isSaving: isSavingRun, feedbackMsg: saveRunMsg, saveRun } = useSaveRun()
+const { clearAndReset } = useStatePersistence()
 
 const hasMetrics = computed(() => !!(sandbox.metricsA || sandbox.metricsB))
+
+function newSandbox() {
+  clearAndReset()
+}
 </script>
 
 <style scoped>

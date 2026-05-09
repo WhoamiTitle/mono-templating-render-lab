@@ -4,6 +4,8 @@ import { loadState as apiLoadState } from '@/api/state-api'
 import type { SandboxState } from '@/types'
 
 const LS_KEY = 'sandbox_state'
+// Used to signal SandboxPage to skip LS restore after SharedStatePage redirect
+const SESSION_SHARE_FLAG = 'sandbox_skip_ls_restore'
 const DEBOUNCE_MS = 1000
 
 export function useStatePersistence() {
@@ -71,8 +73,19 @@ export function useStatePersistence() {
     try {
       if (shareId) {
         const ok = await restoreFromBackend(shareId)
-        if (ok) return 'backend'
+        if (ok) {
+          // Flag next SandboxPage mount to skip LS restore (state already loaded from backend)
+          try { sessionStorage.setItem(SESSION_SHARE_FLAG, '1') } catch { /* ignore */ }
+          return 'backend'
+        }
       }
+      // If redirected from a successful share link load, skip LS to preserve backend state
+      try {
+        if (sessionStorage.getItem(SESSION_SHARE_FLAG)) {
+          sessionStorage.removeItem(SESSION_SHARE_FLAG)
+          return 'backend'
+        }
+      } catch { /* ignore */ }
       if (restoreFromLocalStorage()) return 'localstorage'
       store.resetToPreset()
       return 'preset'
@@ -82,5 +95,10 @@ export function useStatePersistence() {
     }
   }
 
-  return { runRestoreChain, isRestoring }
+  function clearAndReset(): void {
+    try { localStorage.removeItem(LS_KEY) } catch { /* ignore */ }
+    store.resetToPreset()
+  }
+
+  return { runRestoreChain, isRestoring, clearAndReset }
 }
