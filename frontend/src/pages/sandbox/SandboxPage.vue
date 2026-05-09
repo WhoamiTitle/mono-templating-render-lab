@@ -2,11 +2,14 @@
 import { onMounted } from 'vue'
 import EditorTabs from '@/components/sandbox/EditorTabs.vue'
 import PreviewPanel from '@/components/sandbox/PreviewPanel.vue'
+import CompareView from '@/components/sandbox/CompareView.vue'
 import MetricsPanel from '@/components/sandbox/MetricsPanel.vue'
 import SandboxActionBar from '@/components/sandbox/SandboxActionBar.vue'
 import { useStatePersistence } from '@/composables/use-state-persistence'
 import { useDebouncedRender } from '@/composables/use-debounced-render'
+import { useSandboxStore } from '@/stores/sandbox-store'
 
+const sandbox = useSandboxStore()
 const { runRestoreChain } = useStatePersistence()
 const { previewHtml, previewError } = useDebouncedRender()
 
@@ -24,7 +27,8 @@ onMounted(() => {
 
       <div class="right-column">
         <div class="cell cell-preview">
-          <PreviewPanel :html="previewHtml" :error="previewError" />
+          <CompareView v-if="sandbox.mode === 'compare'" />
+          <PreviewPanel v-else :html="previewHtml" :error="previewError" />
         </div>
         <div class="cell cell-metrics">
           <MetricsPanel />

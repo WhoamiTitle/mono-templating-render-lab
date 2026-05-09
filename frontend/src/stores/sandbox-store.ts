@@ -38,6 +38,8 @@ export const useSandboxStore = defineStore('sandbox', () => {
     json.value = state.json
     isDirty.value = false
     savedStateId.value = null
+    metricsA.value = null
+    metricsB.value = null
   }
 
   function resetToPreset() {

@@ -1,86 +1,144 @@
 <template>
   <div class="action-bar">
-    <div class="action-left">
-      <v-btn
-        size="small"
-        variant="tonal"
-        :loading="isRunning"
-        @click="runBenchmark"
-      >
-        Run Benchmark
-      </v-btn>
+    <div class="bar-row">
+      <div class="action-left">
+        <v-btn
+          size="small"
+          variant="tonal"
+          :loading="isRunning"
+          :disabled="isRunning"
+          @click="runBenchmark"
+        >
+          Run Benchmark
+        </v-btn>
 
-      <v-btn
-        size="small"
-        :variant="sandbox.mode === 'compare' ? 'tonal' : 'text'"
-        @click="sandbox.mode = sandbox.mode === 'compare' ? 'editor' : 'compare'"
-      >
-        Compare
-      </v-btn>
+        <v-btn
+          v-if="isRunning"
+          size="small"
+          variant="text"
+          color="error"
+          @click="cancel"
+        >
+          Cancel
+        </v-btn>
 
-      <v-text-field
-        v-model.number="sandbox.iterations"
-        type="number"
-        label="N"
-        density="compact"
-        variant="outlined"
-        hide-details
-        min="1"
-        max="10000"
-        class="iterations-input"
-      />
+        <v-btn
+          size="small"
+          :variant="sandbox.mode === 'compare' ? 'tonal' : 'text'"
+          :disabled="isRunning"
+          @click="sandbox.mode = sandbox.mode === 'compare' ? 'editor' : 'compare'"
+        >
+          Compare
+        </v-btn>
+
+        <div class="iter-group">
+          <v-btn
+            v-for="n in ITER_PRESETS"
+            :key="n"
+            size="x-small"
+            :variant="sandbox.iterations === n ? 'tonal' : 'text'"
+            :disabled="isRunning"
+            @click="sandbox.iterations = n"
+          >
+            {{ n }}
+          </v-btn>
+          <v-text-field
+            v-model.number="sandbox.iterations"
+            type="number"
+            label="N"
+            density="compact"
+            variant="outlined"
+            hide-details
+            min="1"
+            max="10000"
+            :disabled="isRunning"
+            class="iterations-input"
+          />
+        </div>
+      </div>
+
+      <div class="action-right">
+        <v-fade-transition>
+          <span v-if="benchmarkError" key="error" class="feedback-msg text-body-2 text-error">
+            {{ benchmarkError }}
+          </span>
+          <span v-else-if="shareMsg || saveRunMsg" key="feedback" class="feedback-msg text-body-2 text-medium-emphasis">
+            {{ shareMsg || saveRunMsg }}
+          </span>
+        </v-fade-transition>
+
+        <v-btn
+          v-if="auth.isAuthenticated && hasMetrics"
+          size="small"
+          variant="tonal"
+          :loading="isSavingRun"
+          @click="saveRun"
+        >
+          Save Run
+        </v-btn>
+
+        <v-btn
+          size="small"
+          variant="text"
+          :loading="isSavingState"
+          @click="share"
+        >
+          Share
+        </v-btn>
+
+        <v-btn
+          size="small"
+          variant="tonal"
+          :loading="isSavingState"
+          @click="save"
+        >
+          Save
+        </v-btn>
+      </div>
     </div>
 
-    <div class="action-right">
-      <v-fade-transition>
-        <span v-if="benchmarkError" class="feedback-msg text-body-2 text-error">
-          {{ benchmarkError }}
-        </span>
-        <span v-else-if="feedbackMsg" class="feedback-msg text-body-2 text-medium-emphasis">
-          {{ feedbackMsg }}
-        </span>
-      </v-fade-transition>
-
-      <v-btn
-        size="small"
-        variant="text"
-        :loading="isSaving"
-        @click="share"
-      >
-        Share
-      </v-btn>
-
-      <v-btn
-        size="small"
-        variant="tonal"
-        :loading="isSaving"
-        @click="save"
-      >
-        Save
-      </v-btn>
-    </div>
+    <v-progress-linear
+      v-if="isRunning"
+      :model-value="progress * 100"
+      height="2"
+      class="bar-progress"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useSandboxStore } from '@/stores/sandbox-store'
+import { useAuthStore } from '@/stores/auth-store'
 import { useBenchmark } from '@/composables/use-benchmark'
 import { useSandboxShare } from '@/composables/use-sandbox-share'
+import { useSaveRun } from '@/composables/use-save-run'
+
+const ITER_PRESETS = [100, 500, 1000, 5000] as const
 
 const sandbox = useSandboxStore()
-const { isRunning, benchmarkError, runBenchmark } = useBenchmark()
-const { isSaving, feedbackMsg, save, share } = useSandboxShare()
+const auth = useAuthStore()
+const { isRunning, benchmarkError, progress, runBenchmark, cancel } = useBenchmark()
+const { isSaving: isSavingState, feedbackMsg: shareMsg, save, share } = useSandboxShare()
+const { isSaving: isSavingRun, feedbackMsg: saveRunMsg, saveRun } = useSaveRun()
+
+const hasMetrics = computed(() => !!(sandbox.metricsA || sandbox.metricsB))
 </script>
 
 <style scoped>
 .action-bar {
   display: flex;
+  flex-direction: column;
+  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+  flex-shrink: 0;
+}
+
+.bar-row {
+  display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 6px 12px;
   gap: 8px;
-  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
-  flex-shrink: 0;
 }
 
 .action-left,
@@ -90,12 +148,22 @@ const { isSaving, feedbackMsg, save, share } = useSandboxShare()
   gap: 8px;
 }
 
+.iter-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .iterations-input {
-  width: 88px;
+  width: 80px;
   flex-shrink: 0;
 }
 
 .feedback-msg {
   font-size: 0.8rem;
+}
+
+.bar-progress {
+  border-radius: 0;
 }
 </style>

@@ -4,17 +4,17 @@
       <v-tab value="a" class="tab-with-selector">
         <span>Template A</span>
         <EngineSelector
-          v-model="sandbox.slotA.engineId"
+          :model-value="sandbox.slotA.engineId"
           class="ml-2"
-          @update:model-value="sandbox.markDirty()"
+          @update:model-value="onEngineChange('a', $event)"
         />
       </v-tab>
       <v-tab value="b" class="tab-with-selector">
         <span>Template B</span>
         <EngineSelector
-          v-model="sandbox.slotB.engineId"
+          :model-value="sandbox.slotB.engineId"
           class="ml-2"
-          @update:model-value="sandbox.markDirty()"
+          @update:model-value="onEngineChange('b', $event)"
         />
       </v-tab>
       <v-tab value="json">JSON</v-tab>
@@ -61,6 +61,23 @@ const engines = useEnginesStore()
 
 const langA = computed(() => engines.getById(sandbox.slotA.engineId)?.syntaxAlias ?? 'plaintext')
 const langB = computed(() => engines.getById(sandbox.slotB.engineId)?.syntaxAlias ?? 'plaintext')
+
+// Default starter templates per engine — used to detect "still on default" when switching engines.
+const ENGINE_DEFAULT_CODE: Record<string, string> = {
+  handlebars: '<h1>Hello, {{name}}!</h1>',
+  pug: 'h1 Hello, #{name}!',
+  ejs: '<h1>Hello, <%= name %>!</h1>',
+}
+
+function onEngineChange(slot: 'a' | 'b', newEngineId: string) {
+  const s = slot === 'a' ? sandbox.slotA : sandbox.slotB
+  // Auto-swap code only when the user hasn't written custom content yet.
+  if (!s.code || s.code === ENGINE_DEFAULT_CODE[s.engineId]) {
+    s.code = ENGINE_DEFAULT_CODE[newEngineId] ?? ''
+  }
+  s.engineId = newEngineId
+  sandbox.markDirty()
+}
 </script>
 
 <style scoped>
