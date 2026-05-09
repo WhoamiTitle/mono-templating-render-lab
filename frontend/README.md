@@ -1,48 +1,81 @@
-# frontend
+# RenderLab — Frontend
 
-This template should help get you started developing with Vue 3 in Vite.
+Vue 3 + Vite + TypeScript — песочница для сравнения движков шаблонов Handlebars, Pug и EJS (рендеринг на стороне клиента).
 
-## Recommended IDE Setup
+---
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## Быстрый старт
 
-## Recommended Browser Setup
-
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
-
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
+```bash
 npm install
+npm run dev        # http://localhost:5173 — моки включены, бэкенд не нужен
 ```
 
-### Compile and Hot-Reload for Development
+В режиме моков все вызовы login/register обрабатываются в памяти. Можно вводить **любые** email и пароль — проверки учётных данных нет.
 
-```sh
+---
+
+## Запуск с реальным бэкендом (Docker)
+
+Требуется Docker с Compose v2. Из **корня репозитория**:
+
+```bash
+# 1. Запустить PostgreSQL + PHP-бэкенд
+docker compose up -d
+
+# 2. Выполнить миграции базы данных
+docker compose exec backend php bin/migrate.php
+```
+
+Бэкенд доступен по адресу `http://localhost:8000`.
+
+### Подключить фронтенд к бэкенду
+
+Создать файл `frontend/.env.local` (добавлен в .gitignore):
+
+```
+VITE_API_URL=http://localhost:8000
+```
+
+Затем запустить dev-сервер:
+
+```bash
 npm run dev
 ```
 
-### Type-Check, Compile and Minify for Production
+Dev-сервер по-прежнему стартует с `__USE_MOCK__=true`. Чтобы использовать реальный API, нужен production-билд. Простейший способ проверить интеграцию с бэкендом:
 
-```sh
-npm run build
+```bash
+# Собрать и запустить превью с реальным бэкендом
+VITE_API_URL=http://localhost:8000 npm run build
+npm run preview    # http://localhost:4173
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+### Создание пользователя
 
-```sh
-npm run lint
+Готовых dev-пользователей нет. Зарегистрироваться можно через UI на странице `/register` или через curl:
+
+```bash
+curl -s -X POST http://localhost:8000/users \
+  -H "Content-Type: application/json" \
+  -d '{"email":"dev@example.com","password":"secret123"}' | jq
 ```
+
+---
+
+## Команды
+
+| Команда | Описание |
+|---------|----------|
+| `npm run dev` | Dev-сервер на `localhost:5173` — моки включены |
+| `npm run build` | Production-сборка (type-check + бандл, моки выключены) |
+| `npm run preview` | Запустить production-сборку локально |
+| `npm run type-check` | Только `vue-tsc` |
+| `npm run lint` | oxlint + ESLint с `--fix` |
+| `npm run format` | oxfmt |
+
+---
+
+## Настройка IDE
+
+[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (отключить Vetur, если установлен).

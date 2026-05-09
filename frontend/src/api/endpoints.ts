@@ -1,18 +1,17 @@
 // Все URL endpoint'ы для всех API-модулей.
 export const ENDPOINTS = {
   auth: {
-    login: '/auth/login',
-    register: '/auth/register',
-    logout: '/auth/logout',
-    forgotPassword: '/auth/forgot-password',
-    changePassword: '/auth/change-password',
-    me: '/auth/me',
+    login: '/sessions',
+    register: '/users',
+    logout: '/sessions/current',
+    forgotPassword: '/auth/forgot-password', // not in backend yet
+    changePassword: '/auth/change-password', // not in backend yet
   },
   templates: {
     list: '/templates',
-    public: '/templates/public',
     byId: (id: string) => `/templates/${id}`,
-    clone: (id: string) => `/templates/${id}/clone`,
+    updateBody: (id: string) => `/templates/${id}/body`,
+    deactivate: (id: string) => `/templates/${id}/deactivation`,
   },
   renderRuns: {
     list: '/render-runs',

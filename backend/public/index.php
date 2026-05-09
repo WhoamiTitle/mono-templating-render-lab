@@ -19,6 +19,21 @@ if (!is_file($autoloadPath)) {
 
 require $autoloadPath;
 
+// CORS — allow configured origin(s) with credentials
+$corsOrigins = array_filter(explode(',', getenv('CORS_ORIGINS') ?: 'http://localhost:5173'));
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+if ($origin && in_array($origin, $corsOrigins, true)) {
+    header('Access-Control-Allow-Origin: ' . $origin);
+    header('Access-Control-Allow-Credentials: true');
+    header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type, x-actor-id');
+    header('Vary: Origin');
+}
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') {
+    http_response_code(204);
+    exit;
+}
+
 $requiredEnvKeys = [
     'POSTGRES_DB',
     'POSTGRES_USER',

@@ -3,15 +3,23 @@ import { http } from './http-client'
 import { ENDPOINTS } from './endpoints'
 
 export async function login(email: string, password: string): Promise<User> {
-  return http.post<User>(ENDPOINTS.auth.login, { email, password })
+  const result = await http.post<{ userId: string; expiresAt: string }>(
+    ENDPOINTS.auth.login,
+    { email, password },
+  )
+  return { id: result.userId, email }
 }
 
-export async function register(email: string, password: string, name?: string): Promise<User> {
-  return http.post<User>(ENDPOINTS.auth.register, { email, password, name })
+export async function register(email: string, password: string, _name?: string): Promise<User> {
+  const result = await http.post<{ userId: string; email: string; createdAt: string }>(
+    ENDPOINTS.auth.register,
+    { email, password },
+  )
+  return { id: result.userId, email: result.email }
 }
 
 export async function logout(): Promise<void> {
-  return http.post<void>(ENDPOINTS.auth.logout, {})
+  return http.delete<void>(ENDPOINTS.auth.logout)
 }
 
 export async function forgotPassword(email: string): Promise<void> {
@@ -22,6 +30,7 @@ export async function changePassword(oldPassword: string, newPassword: string): 
   return http.post<void>(ENDPOINTS.auth.changePassword, { oldPassword, newPassword })
 }
 
+// No /me endpoint in backend — rely on stored auth state from login/register
 export async function getMe(): Promise<User | null> {
-  return http.get<User>(ENDPOINTS.auth.me)
+  return null
 }

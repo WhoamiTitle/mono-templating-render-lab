@@ -19,9 +19,10 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   function logout() {
+    // Fire API call before clearing user so x-actor-id header is still present
+    authApi.logout().catch(() => {})
     user.value = null
     localStorage.removeItem('auth_user')
-    authApi.logout().catch(() => {})
   }
 
   async function fetchCurrentUser() {

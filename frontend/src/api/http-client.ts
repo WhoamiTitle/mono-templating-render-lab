@@ -1,14 +1,20 @@
-// fetch wrapper: session cookie auth, auto-logout on 401
+// fetch wrapper: session cookie + x-actor-id header auth, auto-logout on 401
 import { useAuthStore } from '@/stores/auth-store'
 import router from '@/router'
 
 const getBaseUrl = () => import.meta.env.VITE_API_URL ?? ''
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const auth = useAuthStore()
+  const authHeaders: Record<string, string> = {}
+  if (auth.user?.id) {
+    authHeaders['x-actor-id'] = auth.user.id
+  }
+
   const res = await fetch(`${getBaseUrl()}${path}`, {
     ...init,
     credentials: 'include',
-    headers: { 'Content-Type': 'application/json', ...init?.headers },
+    headers: { 'Content-Type': 'application/json', ...authHeaders, ...init?.headers },
   })
 
   if (res.status === 401) {
@@ -22,6 +28,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     throw new Error(text || `HTTP ${res.status}`)
   }
 
+  if (res.status === 204) return undefined as T
   return res.json() as Promise<T>
 }
 

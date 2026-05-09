@@ -17,26 +17,28 @@
         <div v-if="sandbox.metricsA" class="metrics-slot">
           <div class="metrics-slot-label text-caption font-weight-medium text-medium-emphasis">Slot A</div>
           <table class="metrics-table text-body-2">
-            <tr>
-              <td class="metric-key text-medium-emphasis">avg</td>
-              <td class="metric-val">{{ formatMs(sandbox.metricsA.avgMs) }}</td>
-            </tr>
-            <tr>
-              <td class="metric-key text-medium-emphasis">min</td>
-              <td class="metric-val">{{ formatMs(sandbox.metricsA.minMs) }}</td>
-            </tr>
-            <tr>
-              <td class="metric-key text-medium-emphasis">max</td>
-              <td class="metric-val">{{ formatMs(sandbox.metricsA.maxMs) }}</td>
-            </tr>
-            <tr>
-              <td class="metric-key text-medium-emphasis">p95</td>
-              <td class="metric-val">{{ formatMs(sandbox.metricsA.p95Ms) }}</td>
-            </tr>
-            <tr>
-              <td class="metric-key text-medium-emphasis">size</td>
-              <td class="metric-val">{{ formatBytes(sandbox.metricsA.outputBytes) }}</td>
-            </tr>
+            <tbody>
+              <tr>
+                <td class="metric-key text-medium-emphasis">avg</td>
+                <td class="metric-val">{{ formatMs(sandbox.metricsA.avgMs) }}</td>
+              </tr>
+              <tr>
+                <td class="metric-key text-medium-emphasis">min</td>
+                <td class="metric-val">{{ formatMs(sandbox.metricsA.minMs) }}</td>
+              </tr>
+              <tr>
+                <td class="metric-key text-medium-emphasis">max</td>
+                <td class="metric-val">{{ formatMs(sandbox.metricsA.maxMs) }}</td>
+              </tr>
+              <tr>
+                <td class="metric-key text-medium-emphasis">p95</td>
+                <td class="metric-val">{{ formatMs(sandbox.metricsA.p95Ms) }}</td>
+              </tr>
+              <tr>
+                <td class="metric-key text-medium-emphasis">size</td>
+                <td class="metric-val">{{ formatBytes(sandbox.metricsA.outputBytes) }}</td>
+              </tr>
+            </tbody>
           </table>
         </div>
 
@@ -45,26 +47,28 @@
         <div v-if="sandbox.metricsB" class="metrics-slot">
           <div class="metrics-slot-label text-caption font-weight-medium text-medium-emphasis">Slot B</div>
           <table class="metrics-table text-body-2">
-            <tr>
-              <td class="metric-key text-medium-emphasis">avg</td>
-              <td class="metric-val">{{ formatMs(sandbox.metricsB.avgMs) }}</td>
-            </tr>
-            <tr>
-              <td class="metric-key text-medium-emphasis">min</td>
-              <td class="metric-val">{{ formatMs(sandbox.metricsB.minMs) }}</td>
-            </tr>
-            <tr>
-              <td class="metric-key text-medium-emphasis">max</td>
-              <td class="metric-val">{{ formatMs(sandbox.metricsB.maxMs) }}</td>
-            </tr>
-            <tr>
-              <td class="metric-key text-medium-emphasis">p95</td>
-              <td class="metric-val">{{ formatMs(sandbox.metricsB.p95Ms) }}</td>
-            </tr>
-            <tr>
-              <td class="metric-key text-medium-emphasis">size</td>
-              <td class="metric-val">{{ formatBytes(sandbox.metricsB.outputBytes) }}</td>
-            </tr>
+            <tbody>
+              <tr>
+                <td class="metric-key text-medium-emphasis">avg</td>
+                <td class="metric-val">{{ formatMs(sandbox.metricsB.avgMs) }}</td>
+              </tr>
+              <tr>
+                <td class="metric-key text-medium-emphasis">min</td>
+                <td class="metric-val">{{ formatMs(sandbox.metricsB.minMs) }}</td>
+              </tr>
+              <tr>
+                <td class="metric-key text-medium-emphasis">max</td>
+                <td class="metric-val">{{ formatMs(sandbox.metricsB.maxMs) }}</td>
+              </tr>
+              <tr>
+                <td class="metric-key text-medium-emphasis">p95</td>
+                <td class="metric-val">{{ formatMs(sandbox.metricsB.p95Ms) }}</td>
+              </tr>
+              <tr>
+                <td class="metric-key text-medium-emphasis">size</td>
+                <td class="metric-val">{{ formatBytes(sandbox.metricsB.outputBytes) }}</td>
+              </tr>
+            </tbody>
           </table>
         </div>
       </div>
