@@ -11,12 +11,16 @@ use application\usecase\command\account\LogoutUserUseCaseInterface;
 use application\usecase\command\account\RegisterUserCommand;
 use application\usecase\command\account\RegisterUserUseCaseInterface;
 use DateTimeImmutable;
+use infrastructure\presentation\http\attribute\OpenApi;
+use infrastructure\presentation\http\attribute\Route;
 use infrastructure\presentation\http\HttpRequest;
 use infrastructure\presentation\http\HttpResponse;
 use infrastructure\presentation\http\JsonResponse;
 use infrastructure\presentation\http\SessionCookieFactory;
 use infrastructure\presentation\http\exception\BadRequestHttpException;
 
+#[Route('POST', '/users')]
+#[OpenApi('Register user', ['Auth'], requestBody: 'RegisterUserRequest', response: 'User', responseStatus: 201, security: [])]
 final class RegisterUserController extends AbstractJsonController
 {
     public function __construct(
@@ -37,6 +41,8 @@ final class RegisterUserController extends AbstractJsonController
     }
 }
 
+#[Route('POST', '/sessions')]
+#[OpenApi('Login user', ['Auth'], requestBody: 'LoginUserRequest', response: 'Session', security: [])]
 final class LoginUserController extends AbstractJsonController
 {
     public function __construct(
@@ -71,6 +77,8 @@ final class LoginUserController extends AbstractJsonController
     }
 }
 
+#[Route('DELETE', '/sessions/current')]
+#[OpenApi('Logout current session', ['Auth'], responseStatus: 204, security: ['xActorId', 'sessionCookie'])]
 final class LogoutUserController extends AbstractJsonController
 {
     public function __construct(

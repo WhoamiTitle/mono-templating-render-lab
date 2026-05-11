@@ -12,4 +12,4 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
  && composer install --no-dev --no-interaction --optimize-autoloader
 
 EXPOSE 8000
-CMD ["php", "-S", "0.0.0.0:8000", "-t", "public"]
+CMD ["php", "-S", "0.0.0.0:8000", "-t", "public", "public/index.php"]

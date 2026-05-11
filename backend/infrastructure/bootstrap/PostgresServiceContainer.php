@@ -60,6 +60,7 @@ use infrastructure\presentation\http\controller\DeactivateTemplateController;
 use infrastructure\presentation\http\controller\GetBenchmarkRunController;
 use infrastructure\presentation\http\controller\GetRecentFailuresController;
 use infrastructure\presentation\http\controller\GetRenderRunController;
+use infrastructure\presentation\http\controller\GetStateController;
 use infrastructure\presentation\http\controller\GetTemplateController;
 use infrastructure\presentation\http\controller\GetTemplateStatsController;
 use infrastructure\presentation\http\controller\LoginUserController;
@@ -67,17 +68,22 @@ use infrastructure\presentation\http\controller\ListBenchmarkRunsController;
 use infrastructure\presentation\http\controller\ListRenderRunsController;
 use infrastructure\presentation\http\controller\ListTemplatesController;
 use infrastructure\presentation\http\controller\LogoutUserController;
+use infrastructure\presentation\http\controller\OpenApiJsonController;
 use infrastructure\presentation\http\controller\RegisterTemplateController;
 use infrastructure\presentation\http\controller\RegisterUserController;
+use infrastructure\presentation\http\controller\SaveStateController;
 use infrastructure\presentation\http\controller\StartBenchmarkRunController;
 use infrastructure\presentation\http\controller\StartRenderRunController;
+use infrastructure\presentation\http\controller\SwaggerUiController;
 use infrastructure\presentation\http\controller\UpdateTemplateBodyController;
+use infrastructure\presentation\http\openapi\OpenApiDocumentFactory;
 use infrastructure\presentation\http\route\CommandRoutes;
 use infrastructure\repository\postgres\PostgresAuthSessionRepository;
 use infrastructure\repository\postgres\PostgresBenchmarkRunRepository;
 use infrastructure\repository\postgres\PostgresConnectionFactory;
 use infrastructure\repository\postgres\PostgresPasswordResetTokenRepository;
 use infrastructure\repository\postgres\PostgresRenderRunRepository;
+use infrastructure\repository\postgres\PostgresSharedStateRepository;
 use infrastructure\repository\postgres\PostgresTemplateRepository;
 use infrastructure\repository\postgres\PostgresUserRepository;
 use infrastructure\support\NativePasswordHasher;
@@ -116,9 +122,13 @@ final class PostgresServiceContainer
             GetBenchmarkRunController::class => $this->get(GetBenchmarkRunController::class, fn () => new GetBenchmarkRunController($this->getBenchmarkRunUseCase())),
             CompleteBenchmarkRunSuccessController::class => $this->get(CompleteBenchmarkRunSuccessController::class, fn () => new CompleteBenchmarkRunSuccessController($this->completeBenchmarkRunSuccessUseCase())),
             CompleteBenchmarkRunFailureController::class => $this->get(CompleteBenchmarkRunFailureController::class, fn () => new CompleteBenchmarkRunFailureController($this->completeBenchmarkRunFailureUseCase())),
+            SaveStateController::class => $this->get(SaveStateController::class, fn () => new SaveStateController($this->sharedStateRepository(), $this->idGenerator(), $this->clock())),
+            GetStateController::class => $this->get(GetStateController::class, fn () => new GetStateController($this->sharedStateRepository())),
             RegisterUserController::class => $this->get(RegisterUserController::class, fn () => new RegisterUserController($this->registerUserUseCase())),
             LoginUserController::class => $this->get(LoginUserController::class, fn () => new LoginUserController($this->loginUserUseCase())),
             LogoutUserController::class => $this->get(LogoutUserController::class, fn () => new LogoutUserController($this->logoutUserUseCase())),
+            OpenApiJsonController::class => $this->get(OpenApiJsonController::class, fn () => new OpenApiJsonController(new OpenApiDocumentFactory(CommandRoutes::controllerClasses()))),
+            SwaggerUiController::class => $this->get(SwaggerUiController::class, fn () => new SwaggerUiController()),
             default => throw new \InvalidArgumentException('Unknown controller: ' . $className),
         };
     }
@@ -333,6 +343,11 @@ final class PostgresServiceContainer
     public function passwordResetTokenRepository(): PasswordResetTokenRepositoryInterface
     {
         return $this->get(PasswordResetTokenRepositoryInterface::class, fn () => new PostgresPasswordResetTokenRepository($this->connection()));
+    }
+
+    public function sharedStateRepository(): PostgresSharedStateRepository
+    {
+        return $this->get(PostgresSharedStateRepository::class, fn () => new PostgresSharedStateRepository($this->connection()));
     }
 
     private function connection(): PDO
