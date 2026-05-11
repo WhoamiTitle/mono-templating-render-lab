@@ -20,7 +20,7 @@ npm run dev        # http://localhost:5173 — моки включены, бэк
 Требуется Docker с Compose v2. Из **корня репозитория**:
 
 ```bash
-# 1. Запустить PostgreSQL + PHP-бэкенд
+# 1. Запустить PostgreSQL + PHP-бэкенд + production frontend
 docker compose up -d
 
 # 2. Выполнить миграции базы данных
@@ -28,6 +28,13 @@ docker compose exec backend php bin/migrate.php
 ```
 
 Бэкенд доступен по адресу `http://localhost:8000`.
+Фронтенд доступен по адресу `http://localhost:4173`.
+
+Для удалённого стенда укажите публичный origin фронтенда в `CORS_ORIGINS`, например:
+
+```bash
+CORS_ORIGINS=http://stand.example.com:4173 docker compose up -d --build
+```
 
 ### Подключить фронтенд к бэкенду
 
