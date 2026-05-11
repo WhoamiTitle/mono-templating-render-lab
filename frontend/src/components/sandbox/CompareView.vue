@@ -1,7 +1,10 @@
 <template>
   <div class="compare-view">
     <div v-if="!sandbox.metricsA && !sandbox.metricsB" class="compare-empty">
-      <span class="text-medium-emphasis text-body-2">Сначала запустите бенчмарк</span>
+      <div>
+        <div class="empty-title">Нет сравнения</div>
+        <div class="empty-subtitle">Benchmark заполнит вывод слотов A/B.</div>
+      </div>
     </div>
     <template v-else>
       <div class="diff-bar">
@@ -77,6 +80,7 @@ const isIdentical = computed(() => !!(sandbox.metricsA && sandbox.metricsB) && d
   flex-direction: column;
   width: 100%;
   height: 100%;
+  min-height: 0;
   overflow: hidden;
 }
 
@@ -85,12 +89,14 @@ const isIdentical = computed(() => !!(sandbox.metricsA && sandbox.metricsB) && d
   align-items: center;
   justify-content: center;
   height: 100%;
+  text-align: center;
 }
 
 .diff-bar {
   display: flex;
   align-items: center;
-  padding: 4px 12px;
+  min-height: 36px;
+  padding: 6px 12px;
   flex-shrink: 0;
   border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
@@ -113,7 +119,7 @@ const isIdentical = computed(() => !!(sandbox.metricsA && sandbox.metricsB) && d
 }
 
 .panel-header {
-  padding: 4px 12px;
+  padding: 7px 12px;
   border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   flex-shrink: 0;
 }
@@ -130,5 +136,15 @@ const isIdentical = computed(() => !!(sandbox.metricsA && sandbox.metricsB) && d
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.empty-title {
+  font-weight: 700;
+}
+
+.empty-subtitle {
+  margin-top: 4px;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
+  font-size: 0.82rem;
 }
 </style>

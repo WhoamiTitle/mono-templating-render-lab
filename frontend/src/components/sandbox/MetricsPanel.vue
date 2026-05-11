@@ -1,75 +1,59 @@
 <template>
   <div class="metrics-panel">
     <div v-if="!sandbox.metricsA && !sandbox.metricsB" class="metrics-empty">
-      <span class="text-medium-emphasis text-body-2">Нет данных — нажмите «Запустить бенчмарк».</span>
+      <div class="empty-title">Нет данных</div>
+      <div class="empty-subtitle">Запуск benchmark заполнит показатели по слотам.</div>
     </div>
-    <div v-else class="metrics-content">
-      <v-chip
-        v-if="speedLabel"
-        size="x-small"
-        :color="speedLabel === 'Identical speed' ? 'success' : 'info'"
-        class="speed-chip"
-      >
-        {{ speedLabel }}
-      </v-chip>
 
-      <div class="metrics-slots">
-        <div v-if="sandbox.metricsA" class="metrics-slot">
-          <div class="metrics-slot-label text-caption font-weight-medium text-medium-emphasis">Слот A</div>
-          <table class="metrics-table text-body-2">
-            <tbody>
-              <tr>
-                <td class="metric-key text-medium-emphasis">ср.</td>
-                <td class="metric-val">{{ formatMs(sandbox.metricsA.avgMs) }}</td>
-              </tr>
-              <tr>
-                <td class="metric-key text-medium-emphasis">мин.</td>
-                <td class="metric-val">{{ formatMs(sandbox.metricsA.minMs) }}</td>
-              </tr>
-              <tr>
-                <td class="metric-key text-medium-emphasis">макс.</td>
-                <td class="metric-val">{{ formatMs(sandbox.metricsA.maxMs) }}</td>
-              </tr>
-              <tr>
-                <td class="metric-key text-medium-emphasis">p95</td>
-                <td class="metric-val">{{ formatMs(sandbox.metricsA.p95Ms) }}</td>
-              </tr>
-              <tr>
-                <td class="metric-key text-medium-emphasis">размер</td>
-                <td class="metric-val">{{ formatBytes(sandbox.metricsA.outputBytes) }}</td>
-              </tr>
-            </tbody>
-          </table>
+    <div v-else class="metrics-content">
+      <div class="metrics-summary">
+        <v-chip
+          v-if="speedLabel"
+          size="small"
+          :color="speedLabel === 'Одинаковая скорость' ? 'success' : 'info'"
+          variant="tonal"
+        >
+          {{ speedLabel }}
+        </v-chip>
+
+        <div class="summary-note">
+          {{ completedSlots }} / 2 слота
+        </div>
+      </div>
+
+      <div class="metrics-grid">
+        <div class="slot-card" :class="{ empty: !sandbox.metricsA }">
+          <div class="slot-head">
+            <div>
+              <div class="slot-title">Слот A</div>
+              <div class="slot-engine">{{ sandbox.slotA.engineId }}</div>
+            </div>
+          </div>
+
+          <div v-if="sandbox.metricsA" class="metric-list">
+            <div v-for="item in metricsForA" :key="item.label" class="metric-item">
+              <span>{{ item.label }}</span>
+              <strong>{{ item.value }}</strong>
+            </div>
+          </div>
+          <div v-else class="slot-empty">Нет результата</div>
         </div>
 
-        <v-divider v-if="sandbox.metricsA && sandbox.metricsB" vertical class="mx-3" />
+        <div class="slot-card" :class="{ empty: !sandbox.metricsB }">
+          <div class="slot-head">
+            <div>
+              <div class="slot-title">Слот B</div>
+              <div class="slot-engine">{{ sandbox.slotB.engineId }}</div>
+            </div>
+          </div>
 
-        <div v-if="sandbox.metricsB" class="metrics-slot">
-          <div class="metrics-slot-label text-caption font-weight-medium text-medium-emphasis">Слот B</div>
-          <table class="metrics-table text-body-2">
-            <tbody>
-              <tr>
-                <td class="metric-key text-medium-emphasis">ср.</td>
-                <td class="metric-val">{{ formatMs(sandbox.metricsB.avgMs) }}</td>
-              </tr>
-              <tr>
-                <td class="metric-key text-medium-emphasis">мин.</td>
-                <td class="metric-val">{{ formatMs(sandbox.metricsB.minMs) }}</td>
-              </tr>
-              <tr>
-                <td class="metric-key text-medium-emphasis">макс.</td>
-                <td class="metric-val">{{ formatMs(sandbox.metricsB.maxMs) }}</td>
-              </tr>
-              <tr>
-                <td class="metric-key text-medium-emphasis">p95</td>
-                <td class="metric-val">{{ formatMs(sandbox.metricsB.p95Ms) }}</td>
-              </tr>
-              <tr>
-                <td class="metric-key text-medium-emphasis">размер</td>
-                <td class="metric-val">{{ formatBytes(sandbox.metricsB.outputBytes) }}</td>
-              </tr>
-            </tbody>
-          </table>
+          <div v-if="sandbox.metricsB" class="metric-list">
+            <div v-for="item in metricsForB" :key="item.label" class="metric-item">
+              <span>{{ item.label }}</span>
+              <strong>{{ item.value }}</strong>
+            </div>
+          </div>
+          <div v-else class="slot-empty">Нет результата</div>
         </div>
       </div>
     </div>
@@ -83,6 +67,8 @@ import { formatMs, formatBytes } from '@/utils/format-metrics'
 
 const sandbox = useSandboxStore()
 
+const completedSlots = computed(() => Number(!!sandbox.metricsA) + Number(!!sandbox.metricsB))
+
 const speedLabel = computed(() => {
   if (!sandbox.metricsA || !sandbox.metricsB) return null
   const a = sandbox.metricsA.avgMs
@@ -90,65 +76,128 @@ const speedLabel = computed(() => {
   const maxAvg = Math.max(a, b)
   if (maxAvg === 0 || Math.abs(a - b) / maxAvg * 100 < 1) return 'Одинаковая скорость'
   const pct = Math.round(Math.abs(a - b) / maxAvg * 100)
-  return `Шаблон ${a < b ? 'A' : 'B'} быстрее на ${pct}%`
+  return `Слот ${a < b ? 'A' : 'B'} быстрее на ${pct}%`
 })
+
+const metricsForA = computed(() => sandbox.metricsA ? metrics(sandbox.metricsA) : [])
+const metricsForB = computed(() => sandbox.metricsB ? metrics(sandbox.metricsB) : [])
+
+function metrics(result: NonNullable<typeof sandbox.metricsA>) {
+  return [
+    { label: 'avg', value: formatMs(result.avgMs) },
+    { label: 'min', value: formatMs(result.minMs) },
+    { label: 'max', value: formatMs(result.maxMs) },
+    { label: 'p95', value: formatMs(result.p95Ms) },
+    { label: 'bytes', value: formatBytes(result.outputBytes) },
+  ]
+}
 </script>
 
 <style scoped>
 .metrics-panel {
-  display: flex;
-  align-items: center;
   width: 100%;
   height: 100%;
-  padding: 8px 16px;
+  min-height: 0;
   overflow: auto;
+  padding: 10px;
 }
 
 .metrics-empty {
-  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+  height: 100%;
   text-align: center;
+}
+
+.empty-title {
+  font-weight: 700;
+}
+
+.empty-subtitle,
+.summary-note,
+.slot-engine,
+.slot-empty,
+.metric-item span {
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
+}
+
+.empty-subtitle,
+.summary-note,
+.slot-engine,
+.slot-empty {
+  margin-top: 3px;
+  font-size: 0.78rem;
 }
 
 .metrics-content {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
 }
 
-.speed-chip {
-  align-self: flex-start;
+.metrics-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
 }
 
-.metrics-slots {
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.slot-card {
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+  border-radius: 8px;
+  background: rgba(var(--v-theme-on-surface), 0.025);
+}
+
+.slot-card.empty {
+  opacity: 0.72;
+}
+
+.slot-head {
   display: flex;
   align-items: flex-start;
+  justify-content: space-between;
   gap: 8px;
+  margin-bottom: 8px;
 }
 
-.metrics-slot {
+.slot-title {
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.metric-list {
+  display: grid;
+  gap: 5px;
+}
+
+.metric-item {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.82rem;
 }
 
-.metrics-slot-label {
-  margin-bottom: 2px;
-}
-
-.metrics-table {
-  border-collapse: collapse;
-}
-
-.metric-key {
-  padding-right: 12px;
-  font-size: 0.75rem;
-  white-space: nowrap;
-}
-
-.metric-val {
-  font-size: 0.8rem;
+.metric-item strong {
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

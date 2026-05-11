@@ -17,7 +17,10 @@
       title="Template preview"
     />
     <div v-else-if="!error" class="preview-empty">
-      <span class="text-medium-emphasis text-body-2">Waiting for render…</span>
+      <div>
+        <div class="empty-title">Preview пустой</div>
+        <div class="empty-subtitle">Измените шаблон или JSON, чтобы увидеть результат.</div>
+      </div>
     </div>
   </div>
 </template>
@@ -35,7 +38,9 @@ defineProps<{
   flex-direction: column;
   width: 100%;
   height: 100%;
+  min-height: 0;
   overflow: hidden;
+  background: rgb(var(--v-theme-surface));
 }
 
 .error-alert {
@@ -62,5 +67,20 @@ defineProps<{
   display: flex;
   align-items: center;
   justify-content: center;
+  text-align: center;
+  background:
+    linear-gradient(rgba(var(--v-theme-on-surface), 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(var(--v-theme-on-surface), 0.035) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.empty-title {
+  font-weight: 700;
+}
+
+.empty-subtitle {
+  margin-top: 4px;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
+  font-size: 0.82rem;
 }
 </style>

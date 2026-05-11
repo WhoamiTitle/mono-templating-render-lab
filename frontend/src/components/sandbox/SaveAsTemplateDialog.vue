@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useTemplatesStore } from '@/stores/templates-store'
 import { useSandboxStore } from '@/stores/sandbox-store'
 
@@ -14,12 +14,20 @@ const description = ref('')
 const isPublic = ref(false)
 const saving = ref(false)
 const error = ref<string | null>(null)
+const selectedSlot = ref<'a' | 'b'>('a')
 
-const activeSlot = computed(() => sandbox.activeTab === 'b' ? sandbox.slotB : sandbox.slotA)
+const activeSlot = computed(() => selectedSlot.value === 'b' ? sandbox.slotB : sandbox.slotA)
 const engineId = computed(() => activeSlot.value.engineId)
 const code = computed(() => activeSlot.value.code)
 
 const nameRules = [(v: string) => !!v.trim() || 'Введите название']
+
+watch(
+  () => props.open,
+  open => {
+    if (open) selectedSlot.value = sandbox.activeTemplateSlot()
+  },
+)
 
 async function save() {
   if (!name.value.trim()) return
@@ -52,6 +60,7 @@ function reset() {
   name.value = ''
   description.value = ''
   isPublic.value = false
+  selectedSlot.value = sandbox.activeTemplateSlot()
   error.value = null
 }
 </script>
@@ -68,6 +77,17 @@ function reset() {
         <v-chip size="small" :color="engineId" variant="tonal" class="mb-4 text-uppercase">
           {{ engineId }}
         </v-chip>
+
+        <v-btn-toggle
+          v-model="selectedSlot"
+          mandatory
+          density="compact"
+          variant="outlined"
+          class="mb-4"
+        >
+          <v-btn value="a">Слот A</v-btn>
+          <v-btn value="b">Слот B</v-btn>
+        </v-btn-toggle>
 
         <v-text-field
           v-model="name"

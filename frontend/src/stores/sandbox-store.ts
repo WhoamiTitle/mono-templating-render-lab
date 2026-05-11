@@ -55,6 +55,24 @@ export const useSandboxStore = defineStore('sandbox', () => {
     metricsB.value = null
   }
 
+  function activeTemplateSlot(): 'a' | 'b' {
+    return activeTab.value === 'b' ? 'b' : 'a'
+  }
+
+  function setSlotTemplate(slot: 'a' | 'b', engineId: string, code: string) {
+    const target = slot === 'b' ? slotB : slotA
+    target.engineId = engineId
+    target.code = code
+  }
+
+  function setActiveSlotTemplate(engineId: string, code: string): 'a' | 'b' {
+    const slot = activeTemplateSlot()
+    setSlotTemplate(slot, engineId, code)
+    activeTab.value = slot
+
+    return slot
+  }
+
   function resetToPreset() {
     loadState(DEFAULT_PRESET)
   }
@@ -75,6 +93,9 @@ export const useSandboxStore = defineStore('sandbox', () => {
     markSaved,
     setIterations,
     loadState,
+    activeTemplateSlot,
+    setSlotTemplate,
+    setActiveSlotTemplate,
     resetToPreset,
   }
 })

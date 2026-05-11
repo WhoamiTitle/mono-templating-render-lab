@@ -1,7 +1,7 @@
 <template>
   <div class="action-bar">
     <div class="bar-row">
-      <div class="action-left">
+      <div class="action-group action-left">
         <v-btn
           size="small"
           variant="tonal"
@@ -30,7 +30,9 @@
         >
           Сравнить
         </v-btn>
+      </div>
 
+      <div class="action-group action-center">
         <div class="iter-group">
           <v-btn
             v-for="n in ITER_PRESETS"
@@ -58,16 +60,7 @@
         </div>
       </div>
 
-      <div class="action-right">
-        <v-fade-transition>
-          <span v-if="benchmarkError" key="error" class="feedback-msg text-body-2 text-error">
-            {{ benchmarkError }}
-          </span>
-          <span v-else-if="shareMsg || saveRunMsg" key="feedback" class="feedback-msg text-body-2 text-medium-emphasis">
-            {{ shareMsg || saveRunMsg }}
-          </span>
-        </v-fade-transition>
-
+      <div class="action-group action-right">
         <v-btn
           v-if="auth.isAuthenticated && hasMetrics"
           size="small"
@@ -108,6 +101,12 @@
       </div>
     </div>
 
+    <v-fade-transition>
+      <div v-if="feedbackMessage" class="bar-feedback" :class="{ 'text-error': benchmarkError }">
+        {{ feedbackMessage }}
+      </div>
+    </v-fade-transition>
+
     <v-progress-linear
       v-if="isRunning"
       :model-value="progress * 100"
@@ -146,6 +145,7 @@ const { isSaving: isSavingRun, feedbackMsg: saveRunMsg, saveRun } = useSaveRun()
 const { clearAndReset } = useStatePersistence()
 
 const hasMetrics = computed(() => !!(sandbox.metricsA || sandbox.metricsB))
+const feedbackMessage = computed(() => benchmarkError.value || shareMsg.value || saveRunMsg.value)
 const saveTemplateOpen = ref(false)
 const templateSavedSnackbar = ref(false)
 
@@ -163,22 +163,36 @@ function onTemplateSaved() {
   display: flex;
   flex-direction: column;
   border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+  background: rgb(var(--v-theme-surface));
   flex-shrink: 0;
 }
 
 .bar-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
-  justify-content: space-between;
   padding: 6px 12px;
-  gap: 8px;
+  gap: 12px;
 }
 
-.action-left,
-.action-right {
+.action-group {
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
+}
+
+.action-left {
+  justify-content: flex-start;
+}
+
+.action-center {
+  justify-content: center;
+}
+
+.action-right {
+  justify-content: flex-end;
+  flex-wrap: wrap;
 }
 
 .iter-group {
@@ -192,11 +206,27 @@ function onTemplateSaved() {
   flex-shrink: 0;
 }
 
-.feedback-msg {
+.bar-feedback {
+  min-height: 20px;
+  padding: 0 12px 6px;
+  text-align: center;
   font-size: 0.8rem;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
 }
 
 .bar-progress {
   border-radius: 0;
+}
+
+@media (max-width: 960px) {
+  .bar-row {
+    grid-template-columns: 1fr;
+  }
+
+  .action-left,
+  .action-center,
+  .action-right {
+    justify-content: center;
+  }
 }
 </style>
