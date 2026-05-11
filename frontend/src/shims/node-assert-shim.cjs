@@ -24,7 +24,6 @@ assert.deepStrictEqual = assert.strictEqual
 
 assert.throws = function throws(fn, _expected, msg) {
   try { fn() } catch (e) {
-    console.log(e);
     return e;
   }
   throw new Error(msg != null ? msg : 'Expected function to throw')

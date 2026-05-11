@@ -2,6 +2,14 @@
 import { onMounted, computed } from 'vue'
 import { useTemplatesStore } from '@/stores/templates-store'
 import { useRenderRunsStore } from '@/stores/render-runs-store'
+import {
+  formatRunBytes,
+  formatRunDate,
+  formatRunMs,
+  hasRunMetrics,
+  runStatusColor,
+  runStatusLabel,
+} from '@/utils/render-run-format'
 
 const templatesStore = useTemplatesStore()
 const runsStore = useRenderRunsStore()
@@ -11,10 +19,6 @@ onMounted(async () => {
 })
 
 const recentRuns = computed(() => runsStore.runs.slice(0, 5))
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString()
-}
 </script>
 
 <template>
@@ -54,8 +58,10 @@ function formatDate(iso: string) {
       <thead>
         <tr>
           <th>Движок</th>
+          <th>Статус</th>
           <th>Ср. (мс)</th>
           <th>Мин. (мс)</th>
+          <th>Макс. (мс)</th>
           <th>P95 (мс)</th>
           <th>Размер</th>
           <th>Дата</th>
@@ -68,11 +74,22 @@ function formatDate(iso: string) {
               {{ run.engineId }}
             </v-chip>
           </td>
-          <td>{{ run.avgMs.toFixed(2) }}</td>
-          <td>{{ run.minMs.toFixed(2) }}</td>
-          <td>{{ run.p95Ms.toFixed(2) }}</td>
-          <td>{{ (run.outputBytes / 1024).toFixed(1) }} KB</td>
-          <td>{{ formatDate(run.createdAt) }}</td>
+          <td>
+            <v-chip size="x-small" :color="runStatusColor(run.status)" variant="tonal">
+              {{ runStatusLabel(run.status) }}
+            </v-chip>
+          </td>
+          <template v-if="hasRunMetrics(run)">
+            <td>{{ formatRunMs(run.avgMs) }}</td>
+            <td>{{ formatRunMs(run.minMs) }}</td>
+            <td>{{ formatRunMs(run.maxMs) }}</td>
+            <td>{{ formatRunMs(run.p95Ms) }}</td>
+            <td>{{ formatRunBytes(run.outputBytes) }}</td>
+          </template>
+          <template v-else>
+            <td colspan="5" class="text-medium-emphasis">Метрики пока не записаны</td>
+          </template>
+          <td>{{ formatRunDate(run.createdAt) }}</td>
         </tr>
       </tbody>
     </v-table>

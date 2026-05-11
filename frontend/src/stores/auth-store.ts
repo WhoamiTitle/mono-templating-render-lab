@@ -18,11 +18,18 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.setItem('auth_user', JSON.stringify(user.value))
   }
 
-  function logout() {
-    // Fire API call before clearing user so x-actor-id header is still present
-    authApi.logout().catch(() => {})
+  function clearSession() {
     user.value = null
     localStorage.removeItem('auth_user')
+  }
+
+  async function logout() {
+    try {
+      if (user.value) await authApi.logout()
+    } catch {
+    } finally {
+      clearSession()
+    }
   }
 
   async function fetchCurrentUser() {
@@ -30,9 +37,9 @@ export const useAuthStore = defineStore('auth', () => {
     if (user.value) {
       localStorage.setItem('auth_user', JSON.stringify(user.value))
     } else {
-      localStorage.removeItem('auth_user')
+      clearSession()
     }
   }
 
-  return { user, isAuthenticated, login, register, logout, fetchCurrentUser }
+  return { user, isAuthenticated, login, register, logout, clearSession, fetchCurrentUser }
 })

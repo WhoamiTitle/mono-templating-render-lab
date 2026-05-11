@@ -16,4 +16,5 @@ export interface BenchmarkResult {
   p95Ms: number
   outputBytes: number
   output: string
+  samplesMs: number[]
 }

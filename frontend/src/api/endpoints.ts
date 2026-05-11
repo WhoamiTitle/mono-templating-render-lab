@@ -17,6 +17,12 @@ export const ENDPOINTS = {
     list: '/render-runs',
     create: '/render-runs',
   },
+  benchmarkRuns: {
+    list: '/benchmark-runs',
+    create: '/benchmark-runs',
+    success: (id: string) => `/benchmark-runs/${id}/success`,
+    failure: (id: string) => `/benchmark-runs/${id}/failure`,
+  },
   state: {
     save: '/state',
     byId: (id: string) => `/state/${id}`,

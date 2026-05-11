@@ -67,6 +67,7 @@ export function useBenchmark() {
       p95Ms: +times[p95Idx]!.toFixed(3),
       outputBytes: new TextEncoder().encode(lastOutput).length,
       output: lastOutput,
+      samplesMs: times,
     }
 
     if (slot === 'a') sandbox.metricsA = metrics

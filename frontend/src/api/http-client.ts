@@ -2,7 +2,26 @@
 import { useAuthStore } from '@/stores/auth-store'
 import router from '@/router'
 
-const getBaseUrl = () => import.meta.env.VITE_API_URL ?? ''
+const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1'])
+const withoutTrailingSlash = (value: string) => value.replace(/\/$/, '')
+
+function getBaseUrl() {
+  const configured = import.meta.env.VITE_API_URL ?? ''
+  if (!configured) return ''
+
+  if (typeof window !== 'undefined' && window.location.hostname) {
+    try {
+      const apiUrl = new URL(configured, window.location.origin)
+      if (LOCAL_HOSTS.has(apiUrl.hostname)) {
+        apiUrl.hostname = window.location.hostname
+        return withoutTrailingSlash(apiUrl.toString())
+      }
+    } catch {
+    }
+  }
+
+  return withoutTrailingSlash(configured)
+}
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const auth = useAuthStore()
@@ -18,7 +37,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   })
 
   if (res.status === 401) {
-    useAuthStore().logout()
+    useAuthStore().clearSession()
     router.push('/login')
     throw new Error('Unauthorized')
   }

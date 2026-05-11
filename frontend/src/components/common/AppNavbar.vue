@@ -9,8 +9,8 @@ const router = useRouter()
 const { isDark, toggle } = useThemeToggle()
 
 async function handleLogout() {
-  auth.logout()
-  router.push('/login')
+  await auth.logout()
+  await router.push('/login')
 }
 </script>
 
