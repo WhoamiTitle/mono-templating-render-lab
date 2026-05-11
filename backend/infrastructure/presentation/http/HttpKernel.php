@@ -10,6 +10,7 @@ final class HttpKernel
 {
     public function __construct(
         private readonly Router $router,
+        private readonly ?SessionAuthenticator $sessionAuthenticator = null,
         private readonly HttpExceptionResponder $exceptionResponder = new HttpExceptionResponder()
     ) {
     }
@@ -30,6 +31,10 @@ final class HttpKernel
             );
 
             $controller = $routeMatch->controller;
+            if ($this->sessionAuthenticator !== null) {
+                $request = $this->sessionAuthenticator->authenticate($request, $controller);
+            }
+
             $response = $controller($request);
 
             if (!$response instanceof HttpResponse) {

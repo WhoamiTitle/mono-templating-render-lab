@@ -19,7 +19,7 @@ final readonly class OpenApi
         public ?string $response = null,
         public int $responseStatus = 200,
         public array $queryParameters = [],
-        public array $security = ['xActorId']
+        public array $security = ['sessionCookie']
     ) {
     }
 }

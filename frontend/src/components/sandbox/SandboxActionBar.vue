@@ -38,12 +38,12 @@
             size="x-small"
             :variant="sandbox.iterations === n ? 'tonal' : 'text'"
             :disabled="isRunning"
-            @click="sandbox.iterations = n"
+            @click="sandbox.setIterations(n)"
           >
             {{ n }}
           </v-btn>
           <v-text-field
-            v-model.number="sandbox.iterations"
+            :model-value="sandbox.iterations"
             type="number"
             label="N"
             density="compact"
@@ -53,6 +53,7 @@
             max="10000"
             :disabled="isRunning"
             class="iterations-input"
+            @update:model-value="sandbox.setIterations(Number($event))"
           />
         </div>
       </div>

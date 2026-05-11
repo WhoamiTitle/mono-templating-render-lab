@@ -11,11 +11,12 @@ export async function login(email: string, password: string): Promise<User> {
 }
 
 export async function register(email: string, password: string, _name?: string): Promise<User> {
-  const result = await http.post<{ userId: string; email: string; createdAt: string }>(
+  await http.post<{ userId: string; email: string; createdAt: string }>(
     ENDPOINTS.auth.register,
     { email, password },
   )
-  return { id: result.userId, email: result.email }
+
+  return login(email, password)
 }
 
 export async function logout(): Promise<void> {

@@ -1,4 +1,4 @@
-// fetch wrapper: session cookie + x-actor-id header auth, auto-logout on 401
+// fetch wrapper: session cookie auth, auto-logout on 401
 import { useAuthStore } from '@/stores/auth-store'
 import router from '@/router'
 
@@ -24,16 +24,10 @@ function getBaseUrl() {
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const auth = useAuthStore()
-  const authHeaders: Record<string, string> = {}
-  if (auth.user?.id) {
-    authHeaders['x-actor-id'] = auth.user.id
-  }
-
   const res = await fetch(`${getBaseUrl()}${path}`, {
     ...init,
     credentials: 'include',
-    headers: { 'Content-Type': 'application/json', ...authHeaders, ...init?.headers },
+    headers: { 'Content-Type': 'application/json', ...init?.headers },
   })
 
   if (res.status === 401) {

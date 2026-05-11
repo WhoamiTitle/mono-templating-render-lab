@@ -50,11 +50,6 @@ final class OpenApiDocumentFactory
             'paths' => $paths,
             'components' => [
                 'securitySchemes' => [
-                    'xActorId' => [
-                        'type' => 'apiKey',
-                        'in' => 'header',
-                        'name' => 'x-actor-id',
-                    ],
                     'sessionCookie' => [
                         'type' => 'apiKey',
                         'in' => 'cookie',
@@ -216,10 +211,12 @@ final class OpenApiDocumentFactory
             'TemplateList' => $this->listOf('Template'),
             'TemplateStats' => $this->object([
                 'templateId' => ['type' => 'string'],
-                'runsTotal' => ['type' => 'integer'],
-                'runsSuccess' => ['type' => 'integer'],
-                'runsFailure' => ['type' => 'integer'],
+                'totalRuns' => ['type' => 'integer'],
+                'successRuns' => ['type' => 'integer'],
+                'failedRuns' => ['type' => 'integer'],
                 'avgDurationMs' => ['type' => ['number', 'null']],
+                'minDurationMs' => ['type' => ['integer', 'null']],
+                'maxDurationMs' => ['type' => ['integer', 'null']],
             ]),
             'RegisterTemplateRequest' => $this->object(['name' => ['type' => 'string'], 'engineType' => ['type' => 'string'], 'templateBody' => ['type' => 'string']], ['name', 'engineType', 'templateBody']),
             'UpdateTemplateBodyRequest' => $this->object(['templateBody' => ['type' => 'string']], ['templateBody']),
@@ -261,6 +258,19 @@ final class OpenApiDocumentFactory
                 'finishedAt' => ['type' => ['string', 'null'], 'format' => 'date-time'],
             ]),
             'BenchmarkRunList' => $this->listOf('BenchmarkRun'),
+            'StartBenchmarkRunResponse' => $this->object([
+                'benchmarkRunId' => ['type' => 'string'],
+                'templateId' => ['type' => 'string'],
+                'ownerId' => ['type' => 'string'],
+                'status' => ['type' => 'string'],
+                'iterationsN' => ['type' => 'integer'],
+                'startedAt' => ['type' => 'string', 'format' => 'date-time'],
+            ], ['benchmarkRunId', 'templateId', 'ownerId', 'status', 'iterationsN', 'startedAt']),
+            'CompleteBenchmarkRunResponse' => $this->object([
+                'benchmarkRunId' => ['type' => 'string'],
+                'status' => ['type' => 'string'],
+                'finishedAt' => ['type' => 'string', 'format' => 'date-time'],
+            ], ['benchmarkRunId', 'status', 'finishedAt']),
             'StartBenchmarkRunRequest' => $this->object(['templateId' => ['type' => 'string'], 'context' => ['type' => 'object', 'additionalProperties' => true], 'iterationsN' => ['type' => 'integer']], ['templateId', 'context', 'iterationsN']),
             'CompleteBenchmarkRunSuccessRequest' => $this->object([
                 'samplesMs' => ['type' => 'array', 'items' => ['type' => 'number']],

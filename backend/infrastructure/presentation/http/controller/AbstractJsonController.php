@@ -31,11 +31,6 @@ abstract class AbstractJsonController
             return trim($actorId);
         }
 
-        $headerActorId = $request->header('x-actor-id');
-        if ($headerActorId !== null && trim($headerActorId) !== '') {
-            return trim($headerActorId);
-        }
-
         throw new UnauthorizedHttpException('auth.actor_id.required');
     }
 

@@ -20,14 +20,27 @@ export const useSandboxStore = defineStore('sandbox', () => {
   const isDirty = ref(false)
   const savedStateId = ref<string | null>(null)
 
+  function clearMetrics() {
+    metricsA.value = null
+    metricsB.value = null
+  }
+
   function markDirty() {
     isDirty.value = true
     savedStateId.value = null
+    clearMetrics()
   }
 
   function markSaved(id: string) {
     isDirty.value = false
     savedStateId.value = id
+  }
+
+  function setIterations(value: number) {
+    const next = Math.max(1, Math.min(10000, Number(value) || 1))
+    if (iterations.value === next) return
+    iterations.value = next
+    clearMetrics()
   }
 
   function loadState(state: SandboxState) {
@@ -57,8 +70,10 @@ export const useSandboxStore = defineStore('sandbox', () => {
     iterations,
     isDirty,
     savedStateId,
+    clearMetrics,
     markDirty,
     markSaved,
+    setIterations,
     loadState,
     resetToPreset,
   }

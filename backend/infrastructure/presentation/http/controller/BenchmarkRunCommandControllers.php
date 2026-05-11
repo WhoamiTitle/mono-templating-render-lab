@@ -17,7 +17,7 @@ use infrastructure\presentation\http\HttpResponse;
 use infrastructure\presentation\http\JsonResponse;
 
 #[Route('POST', '/benchmark-runs')]
-#[OpenApi('Start benchmark run', ['Benchmark runs'], requestBody: 'StartBenchmarkRunRequest', response: 'BenchmarkRun', responseStatus: 201)]
+#[OpenApi('Start benchmark run', ['Benchmark runs'], requestBody: 'StartBenchmarkRunRequest', response: 'StartBenchmarkRunResponse', responseStatus: 201)]
 final class StartBenchmarkRunController extends AbstractJsonController
 {
     public function __construct(
@@ -41,7 +41,7 @@ final class StartBenchmarkRunController extends AbstractJsonController
 }
 
 #[Route('POST', '/benchmark-runs/{benchmarkRunId}/success')]
-#[OpenApi('Complete benchmark run successfully', ['Benchmark runs'], requestBody: 'CompleteBenchmarkRunSuccessRequest', response: 'BenchmarkRun')]
+#[OpenApi('Complete benchmark run successfully', ['Benchmark runs'], requestBody: 'CompleteBenchmarkRunSuccessRequest', response: 'CompleteBenchmarkRunResponse')]
 final class CompleteBenchmarkRunSuccessController extends AbstractJsonController
 {
     public function __construct(
@@ -90,7 +90,7 @@ final class CompleteBenchmarkRunSuccessController extends AbstractJsonController
 }
 
 #[Route('POST', '/benchmark-runs/{benchmarkRunId}/failure')]
-#[OpenApi('Complete benchmark run with failure', ['Benchmark runs'], requestBody: 'CompleteBenchmarkRunFailureRequest', response: 'BenchmarkRun')]
+#[OpenApi('Complete benchmark run with failure', ['Benchmark runs'], requestBody: 'CompleteBenchmarkRunResponse')]
 final class CompleteBenchmarkRunFailureController extends AbstractJsonController
 {
     public function __construct(

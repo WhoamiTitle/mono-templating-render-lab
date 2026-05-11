@@ -78,7 +78,7 @@ final class LoginUserController extends AbstractJsonController
 }
 
 #[Route('DELETE', '/sessions/current')]
-#[OpenApi('Logout current session', ['Auth'], responseStatus: 204, security: ['xActorId', 'sessionCookie'])]
+#[OpenApi('Logout current session', ['Auth'], responseStatus: 204)]
 final class LogoutUserController extends AbstractJsonController
 {
     public function __construct(
