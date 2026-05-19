@@ -1,4 +1,5 @@
-FROM node:24-alpine
+# ── build stage ────────────────────────────────────────────────────────────
+FROM node:24-alpine AS build
 
 WORKDIR /app
 
@@ -11,6 +12,11 @@ ARG VITE_API_URL=http://localhost:8000
 ENV VITE_API_URL=$VITE_API_URL
 RUN npm run build-only
 
-EXPOSE 4173
+# ── serve stage ────────────────────────────────────────────────────────────
+FROM nginx:alpine
 
-CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0", "--port", "4173"]
+# SPA fallback: любой путь → index.html (Vue Router history mode)
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/dist /usr/share/nginx/html
+
+EXPOSE 80
